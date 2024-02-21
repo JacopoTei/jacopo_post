@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Article extends Model
 {
@@ -22,7 +23,24 @@ class Article extends Model
     public function user(){
         return $this->belongsTo(Article::class);
 
-    }public function category(){
+    }
+    
+    public function category(){
         return $this->belongsTo(Category::class);
+    }
+
+    use HasFactory, Searchable;
+    
+    public function toSearchableArray(){
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'body' => $this->body,
+            'category' => $this->category,
+        ];
+    }
+
+    public function tags(){
+        return $this->belongsToMany(Tag::class);
     }
 }

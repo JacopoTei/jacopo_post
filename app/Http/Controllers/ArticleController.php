@@ -32,31 +32,38 @@ class ArticleController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'title' => 'required|unique:articles|min:5',
-        'subtitle' => 'required|unique:articles|min:5',
-        'body' => 'required|min:10',
-        'image' => 'image|required',
-        'category' => 'required',
-    ]);
-
-    $article = new Article();
-    $article->title = $request->title;
-    $article->subtitle = $request->subtitle;
-    $article->body = $request->body;
-    $article->category_id = $request->category;
-    $article->user_id = Auth::user()->id;
-
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('public/images');
-        $article->image = $imagePath;
+    {
+        $request->validate([
+            'title' => 'required|unique:articles|min:5',
+            'subtitle' => 'required|unique:articles|min:5',
+            'body' => 'required|min:10',
+            'image' => 'image|required',
+            'category' => 'required',
+            'tags' => 'required',
+        ]);
+    
+        $article = Article::create([
+            'title' => $request->title,
+            'subtitle' => $request->subtitle,
+            'body' => $request->body,
+            'image' => $request->file('image')->store('public/images'),
+            'category_id' => $request->category,
+            'user_id' => Auth::user()->id,
+        ]);
+    
+        $tags = explode(',', $request->tags);
+    
+        foreach ($tags as $tag) {
+            $newTag = Tag::updateOrCreate([
+                'name' => $tag,
+            ]);
+    
+            $article->tags()->attach($newTag);
+        }
+    
+        return redirect(route('welcome'))->with('message', 'Articolo creato correttamente');
     }
-
-    $article->save();
-
-    return redirect(route('welcome'))->with('message', 'Articolo creato correttamente');
-}
+    
 
     /**
      * Display the specified resource.
@@ -88,6 +95,14 @@ class ArticleController extends Controller
     public function destroy(Article $article)
     {
         //
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $articles = Article::search($query)->where('is_accepted', true)->orderBy('created_at', 'desc')->get();
+
+        return view('article.search-index', compact ('articles', 'query'));
     }
 
     public function byCategory(Category $category)
