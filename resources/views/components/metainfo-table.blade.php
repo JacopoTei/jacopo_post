@@ -9,17 +9,18 @@
         </tr>
     </thead>
     <tbody>
-        @if($metaType == "tags")
         @foreach($metaInfos as $metaInfo)
         <tr>
             <th scope="row">{{$metaInfo->id}}</th>
             <td>{{$metaInfo->name}}</td>
             <td>{{count($metaInfo->articles)}}</td>
+            @if($metaType == "tags")
             <td>
                 <form action="{{route('admin.editTag', ['tag' => $metaInfo])}}" method="POST">
                     @csrf
                     @method('put')
-                    <input type="text" name="name" placeholder="Nuovo nome" class="form-control w-50 d-inline"> <button type="submit" class="btn btn-info text-white">Aggiorna</button>
+                    <input type="text" name="name" placeholder="Nuovo nome" class="form-control w-50 d-inline"> 
+                    <button type="submit" class="btn btn-info text-white">Aggiorna</button>
                 </form>
             </td>
             <td>
@@ -30,7 +31,6 @@
                 </form>
             </td>
         </tr>
-        @endforeach
         @else
         <tr>
             <td>
@@ -48,7 +48,8 @@
                     <button type="submit" class="btn btn-danger text-white">Elimina</button>
                 </form>
             </td>
+            @endif
         </tr>
-        @endif
+        @endforeach
     </tbody>
 </table>

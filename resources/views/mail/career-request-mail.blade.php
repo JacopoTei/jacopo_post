@@ -12,5 +12,7 @@
     <p>Ricevuta da {{ $info['email'] }}</p>
     <h4>Messaggio:</h4>
     <p>{{ $info['message'] }}</p>
+    <a href="{{ route('accetta-richiesta', ['role' => $info['role'], 'email' => $info['email']]) }}">Accetta richiesta</a>
+
 </body>
 </html>

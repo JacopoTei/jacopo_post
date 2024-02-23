@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tag;
+use App\Models\User;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -10,9 +14,11 @@ class AdminController extends Controller
         $adminRequests = User::where('is_admin', null)->get();
         $revisorRequests = User::where('is_revisor', null)->get();
         $writerRequests = User::where('is_writer', null)->get();
-    
-        return view('admin.dashboard', compact('adminRequests', 'revisorRequests', 'writerRequests'));
+        
+        
+        return view('admin.dashboard', compact('adminRequests', 'revisorRequests', 'writerRequests',));
     }
+    
 
     public function setAdmin(User $user) {
         $user->update([
@@ -83,10 +89,10 @@ class AdminController extends Controller
         Category::create([
             'name' => strtolower($request->name),
         ]);
-        return redirect(route('admin.dashboard'))->with('message', 'Hai correttamente inseerito la categoria');
+        return redirect(route('admin.dashboard'))->with('message', 'Hai correttamente inserito la categoria');
         $category->delete();
 
-        return redirect(route('admin.dashboard'))->with('message', 'Hai correttamente eliminato la categoria');
+       
     }
 }
 

@@ -2,44 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use Illuminate\Http\Request;
 
 class RevisorController extends Controller
 {
-    public function dashboard()
-{
-    $unrevisionedArticles = Article::whereNull('is_accepted')->get();
-    $acceptedArticles = Article::where('is_accepted', true)->get();
-    $rejectedArticles = Article::where('is_accepted', false)->get();
+    public function dashboard(){
+        $unrevisionedArticles= Article::where('is_accepted', NULL)->get();
+        $acceptedArticles= Article::where('is_accepted', true)->get();
+        $rejectedArticles= Article::where('is_accepted', false)->get();
 
-    return view('revisor.dashboard', compact('unrevisionedArticles', 'acceptedArticles', 'rejectedArticles'));
-}
+        return view('revisor.dashboard', compact('unrevisionedArticles', 'acceptedArticles', 'rejectedArticles'));
+    }
+    public function acceptArticle(Article $article){
+        $article->update([
+            'is_accepted'=>true,
+        ]);
 
-    public function acceptArticle (User $user) {
-    $article->update([
-        'is_accepted' => true,
-    ]);
-    
-    return redirect(route('revisor.dashboard'))->with('message' , 'Hai accettato l\'articolo scelto');
-    
-}
+        return redirect()->route('writer.dashboard')->with('message', 'Articolo aggiornato con successo');
+    }
+    public function rejectArticle(Article $article){
+        $article->update([
+            'is_accepted'=>false,
+        ]);
 
-    public function rejectArticle (User $user) {
-    $article->update([
-        'is_accepted' => false,
-    ]);
-    
-    return redirect(route('revisor.dashboard'))->with('message' , 'Hai rifiutato l\'articolo scelto');
-    
-}
+        return redirect(route('revisor.dashboard'))->with('message', 'Hai rifiutato l\'articolo scelto');
+    }
+    public function undoArticle(Article $article){
+        $article->update([
+            'is_accepted'=>NULL,
+        ]);
 
-
-    public function undoArticle (User $user) {
-    $article->update([
-        'is_accepted' => NULL,
-    ]);
-    
-    return redirect(route('revisor.dashboard'))->with('message' , 'Hai riportato l\'articolo in revisione');
-    
-} 
+        return redirect(route('revisor.dashboard'))->with('message', 'Hai riportato l\'articolo scelto di nuovo in revisione');
+    }
 }
